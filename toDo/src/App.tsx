@@ -21,14 +21,23 @@ interface ITodo {
 }
 
 const TodoApp: React.FC = () => {
+  // State để lưu trữ danh sách công việc
   const [todos, setTodos] = useState<ITodo[]>([
     { id: 1, name: 'Công việc 1', completed: false },
     { id: 2, name: 'Công việc 2', completed: true },
     { id: 3, name: 'Công việc 3', completed: false },
-  ]); const [task, setTask] = useState<string>('');
+  ]); 
+
+  // State để quản lý công việc hiện tại đang nhập
+  const [task, setTask] = useState<string>('');
+
+  // State để theo dõi công việc đang được chỉnh sửa
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  // State để quản lý lỗi xác thực
   const [error, setError] = useState<string>('');
 
+  // Tải danh sách công việc từ localStorage khi component được mount
   useEffect(() => {
     const storedTodos = localStorage.getItem('todos');
     if (storedTodos) {
@@ -36,10 +45,12 @@ const TodoApp: React.FC = () => {
     }
   }, []);
 
+  // Lưu danh sách công việc vào localStorage mỗi khi chúng thay đổi
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
   }, [todos]);
 
+  // Hàm để xử lý thêm hoặc chỉnh sửa công việc
   const handleAddEdit = (): void => {
     if (!task.trim()) {
       setError('Tên công việc không được để trống');
@@ -59,12 +70,14 @@ const TodoApp: React.FC = () => {
     setTask('');
   };
 
+  // Hàm để xử lý xóa công việc
   const handleDelete = (id: number): void => {
     if (window.confirm('Bạn có chắc chắn muốn xóa công việc này không?')) {
       setTodos(todos.filter((todo) => todo.id !== id));
     }
   };
 
+  // Hàm để xử lý chỉnh sửa công việc
   const handleEdit = (id: number): void => {
     const todoToEdit = todos.find((todo) => todo.id === id);
     if (todoToEdit) {
@@ -73,11 +86,15 @@ const TodoApp: React.FC = () => {
     }
   };
 
+  // Hàm để chuyển đổi trạng thái hoàn thành của công việc
   const toggleComplete = (id: number): void => {
     setTodos(todos.map((todo) => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)));
   };
 
+  // Tính toán số lượng công việc đã hoàn thành
   const completedCount = todos.filter((todo) => todo.completed).length;
+
+  // Kiểm tra xem tất cả công việc đã hoàn thành hay chưa
   const allCompleted = todos.length > 0 && completedCount === todos.length;
 
   return (
